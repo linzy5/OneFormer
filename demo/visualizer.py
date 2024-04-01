@@ -22,7 +22,7 @@ from detectron2.structures import BitMasks, Boxes, BoxMode, Keypoints, PolygonMa
 from detectron2.utils.file_io import PathManager
 import random
 random.seed(0)
-from colormap import random_color, _COLORS
+from .colormap import random_color, _COLORS
 logger = logging.getLogger(__name__)
 
 __all__ = ["ColorMode", "VisImage", "Visualizer"]
@@ -224,7 +224,7 @@ class _PanopticPrediction:
         assert (
             len(empty_ids) == 1
         ), ">1 ids corresponds to no labels. This is currently not supported"
-        return (self._seg != empty_ids[0]).numpy().astype(np.bool)
+        return (self._seg != empty_ids[0]).numpy().astype(bool)
 
     def semantic_masks(self):
         for sid in self._seg_ids:
@@ -232,14 +232,14 @@ class _PanopticPrediction:
             if sinfo is None or sinfo["isthing"]:
                 # Some pixels (e.g. id 0 in PanopticFPN) have no instance or semantic predictions.
                 continue
-            yield (self._seg == sid).numpy().astype(np.bool), sinfo
+            yield (self._seg == sid).numpy().astype(bool), sinfo
 
     def instance_masks(self):
         for sid in self._seg_ids:
             sinfo = self._sinfo.get(sid)
             if sinfo is None or not sinfo["isthing"]:
                 continue
-            mask = (self._seg == sid).numpy().astype(np.bool)
+            mask = (self._seg == sid).numpy().astype(bool)
             if mask.sum() > 0:
                 yield mask, sinfo
 
